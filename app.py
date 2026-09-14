@@ -59,7 +59,7 @@ T_outside, solar_irradiance = generate_weather_curves(t_min, t_max, peak_solar)
 hours = np.arange(0, 24)
 
 st.divider()
-st.subheader("Material Efficiency Comparison (With Solar Gain)")
+st.subheader("Material Efficiency Comparison")
 
 comparison_data = []
 for mat_name, k_val in WALL_MATERIALS.items():
@@ -75,6 +75,14 @@ for mat_name, k_val in WALL_MATERIALS.items():
         "Biot Status": biot_status,
         "Kerosene/Day (Liters)": round(sum(kerosene), 2)
     })
+
+
+
+
+
+
+
+
 
 df = pd.DataFrame(comparison_data)
 
