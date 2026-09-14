@@ -14,7 +14,7 @@ def generate_weather_curves(t_min, t_max, peak_solar):
     t_mean = (t_max + t_min) / 2
     t_amp = (t_max - t_min) / 2
     
-    for hour in range(24):
+    for hour in range(0,24):
         temp = t_mean - t_amp * math.cos(math.pi * (hour - 4) / 12)
         t_outside.append(temp)
         
@@ -26,7 +26,7 @@ def generate_weather_curves(t_min, t_max, peak_solar):
             
     return t_outside, solar_irradiance
 
-def calculate_hourly_heat_loss(target_temp, t_outside, solar_irradiance, area, thickness, k_wall, window_area, shgc, err):
+def calculate_hourly_heat_loss(target_temp, t_outside, solar_irradiance, area, thickness, k_wall, wimdow_area, shgc, err):
     heat_lossWatts = []
     kerosene = []
     
@@ -39,7 +39,7 @@ def calculate_hourly_heat_loss(target_temp, t_outside, solar_irradiance, area, t
         else:
             q_loss = 0
             
-        q_solar = sun_intensity * window_area * shgc
+        q_solar = sun_intensity * wimdow_area * shgc
         
         net_loss = q_loss - q_solar
         

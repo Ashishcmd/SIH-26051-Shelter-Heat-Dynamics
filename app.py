@@ -8,8 +8,8 @@ from physics import check_biot, generate_weather_curves, calculate_hourly_heat_l
 
 st.set_page_config(page_title="Suraksha Awas", layout="wide")
 
-st.title("Suraksha-Awas: Thermal Shelter Optimizer")
-st.markdown("Automated 24-Hour Diurnal Heat Loss & Logistics Calculator for High-Altitude Deployments")
+st.title("Suraksha Awas: Thermal Shelter Optimizer")
+st.markdown("Automated 24-Hour Diurnal Heat Loss & Logistics Calculator")
 st.divider()
 
 st.markdown("""
@@ -33,15 +33,18 @@ st.divider()
 col1, col2, col3 = st.columns(3)
 
 with col1:
+
     st.subheader("1. Architecture")
     l = st.number_input("Length (m)", 4.0)
     b = st.number_input("Breadth (m)", 4.0)
     h = st.number_input("Height (m)", 2.5)
+
     thickness = st.number_input("Wall Thickness (m)", 0.10)
 
 with col2:
     st.subheader("2. Glazing & Materials")
-    window_area = st.number_input("South Window Area (m²)", 0.0, 10.0, 2.0)
+
+    wimdow_area = st.number_input("South Window Area (m²)", 0.0, 10.0, 2.0)
     shgc = st.slider("Solar Heat Gain Coefficient (SHGC)", 0.0, 1.0, 0.6)
     active_material = st.selectbox("Wall Material", list(WALL_MATERIALS.keys()))
     h_conv = st.number_input("Convection Coeff (h)",10)
@@ -51,9 +54,9 @@ with col3:
     target_temp = st.slider("Target Inside Temp (°C)", 5, 25, 15)
     t_max = st.number_input("Daytime High Temp (°C)", 5)
     t_min = st.number_input("Nighttime Low Temp (°C)", -25)
-    peak_solar = st.number_input("Peak Solar Irradiance (W/m²)", 900)
+    peak_solar = st.number_input("Peak Solar Irradiance (W/m²)", 1000)
 
-surface_area = (2 * l * h) + (2 * b * h) + (l * b) - window_area
+surface_area = (2 * l * h) + (2 * b * h) + (l * b) - wimdow_area
 
 T_outside, solar_irradiance = generate_weather_curves(t_min, t_max, peak_solar)
 hours = np.arange(0, 24)
@@ -65,10 +68,12 @@ comparison_data = []
 for mat_name, k_val in WALL_MATERIALS.items():
     biot_val, err_margin = check_biot(h_conv, thickness, k_val)
     watts, kerosene = calculate_hourly_heat_loss(
-        target_temp, T_outside, solar_irradiance, surface_area, thickness, k_val, window_area, shgc, err_margin
+        target_temp, T_outside, solar_irradiance, surface_area, thickness, k_val, wimdow_area, shgc, err_margin
     )
-    
-    biot_status = "Valid" if biot_val <= 0.1 else f"High (+15% Penalty)"
+    if biot_val<= 0.1:
+        biot_status = "Valid"
+    else:
+        biot_status = "High (+15% Penalty)"
     comparison_data.append({
         "Material": mat_name,
         "k-Value": k_val,
@@ -99,7 +104,7 @@ st.subheader(f"24-Hour Thermal Profile: {active_material}")
 k_active = WALL_MATERIALS[active_material]
 active_biot, active_err = check_biot(h_conv, thickness, k_active)
 active_watts, active_kerosene = calculate_hourly_heat_loss(
-    target_temp, T_outside, solar_irradiance, surface_area, thickness, k_active, window_area, shgc, active_err
+    target_temp, T_outside, solar_irradiance, surface_area, thickness, k_active, wimdow_area, shgc, active_err
 )
 
 col_a, col_b = st.columns(2)
