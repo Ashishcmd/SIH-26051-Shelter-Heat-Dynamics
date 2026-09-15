@@ -117,6 +117,8 @@ with col_b:
     st.metric(label="Kerosene Required (24h)", value=f"{round(sum(active_kerosene), 1)} Liters")
 
 
+
+
 st.divider()
 st.subheader("Exporting ADPL")
 ansys_script_text = generate_ansys_apdl(l,b,h,thickness,active_material,k_active)
