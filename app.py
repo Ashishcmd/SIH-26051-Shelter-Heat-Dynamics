@@ -27,7 +27,7 @@ Stage 2 Targets-
 
 6. Real weather data about temperature, wind speed, air density, altitude
 
-7. Track OVER HEATING
+7. Track OVER HEATING at Noon
 """)
 st.divider()
 
