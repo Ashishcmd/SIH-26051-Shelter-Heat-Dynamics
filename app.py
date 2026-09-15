@@ -119,17 +119,14 @@ with col_b:
 
 st.divider()
 st.subheader("Exporting ADPL")
-
-# Generate the script text using your original variable names
 ansys_script_text = generate_ansys_apdl(l,b,h,thickness,active_material,k_active)
 
-st.markdown("Export current geometry and material parameters directly to ANSYS Mechanical for 3D FEA meshing.")
+st.markdown("Export current geometry and material parameters to ANSYS Mechanical for 3D FEA meshing.")
 
-# The Streamlit Download Button
 st.download_button(
     label="⬇️ Download ANSYS APDL Script (.mac)",
     data=ansys_script_text,
-    file_name=f"suraksha_shelter_{active_material}.mac",  # Updated variable here too
+    file_name=f"suraksha_shelter_{active_material}.mac",
     mime="text/plain"
 )
 
