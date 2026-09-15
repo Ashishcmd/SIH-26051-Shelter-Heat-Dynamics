@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
+import plotly.graph_objects as graphing
 
 from materials import WALL_MATERIALS
 from physics import check_biot, generate_weather_curves, calculate_hourly_heat_loss
@@ -26,6 +26,8 @@ Stage 2 Targets-
 5. Account for Heat Radiated from Soldiers Body
 
 6. Real weather data about temperature, wind speed, air density, altitude
+
+7. Track OVER HEATING
 """)
 st.divider()
 
@@ -77,7 +79,7 @@ for mat_name, k_val in WALL_MATERIALS.items():
     comparison_data.append({
         "Material": mat_name,
         "k-Value": k_val,
-        "Biot Status": biot_status,
+        "Biot Status": f"{round(biot_val, 2)} - {biot_status}",
         "Kerosene/Day (Liters)": round(sum(kerosene), 2)
     })
 
@@ -93,10 +95,10 @@ df = pd.DataFrame(comparison_data)
 
 def highlight_selected(row):
     if row['Material'] == active_material:
-        return ['background-color: rgba(0, 255, 0, 0.2)'] * len(row)
+        return ['background-color: rgba(0, 255, 0, 0.4)'] * len(row)
     return [''] * len(row)
 
-st.dataframe(df.style.apply(highlight_selected, axis=1), use_container_width=True)
+st.dataframe(df.style.apply(highlight_selected, axis=1))
 
 st.divider()
 st.subheader(f"24-Hour Thermal Profile: {active_material}")
@@ -109,16 +111,16 @@ active_watts, active_kerosene = calculate_hourly_heat_loss(
 
 col_a, col_b = st.columns(2)
 with col_a:
-    st.metric(label="Net Heat Lost (24h)", value=f"{sum(active_watts)/1000:.1f} kW")
+    st.metric(label="Net Heat Lost (24h)", value=f"{round(sum(active_watts)/1000, 1)} kW")
 with col_b:
-    st.metric(label="Kerosene Required (24h)", value=f"{sum(active_kerosene):.2f} Liters")
+    st.metric(label="Kerosene Required (24h)", value=f"{round(sum(active_kerosene), 1)} Liters")
 
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=hours, y=T_outside, mode='lines+markers', name='Outside Temp (°C)', line=dict(color='cyan')))
-fig.add_trace(go.Scatter(x=hours, y=[target_temp]*24, mode='lines', name='Target Inside Temp (°C)', line=dict(color='green', dash='dash')))
+fig = graphing.Figure()
+fig.add_trace(graphing.Scatter(x=hours, y=T_outside, mode='lines+markers', name='Outside Temp (°C)', line=dict(color='cyan')))
+fig.add_trace(graphing.Scatter(x=hours, y=[target_temp]*24, mode='lines', name='Target Inside Temp (°C)', line=dict(color='green', dash='dash')))
 
-scaled_kerosene = [k * 10 for k in active_kerosene]
-fig.add_trace(go.Bar(x=hours, y=scaled_kerosene, name='Kerosene Burn Rate (Scaled x10)', marker_color='orange', opacity=0.7))
+oil_scaled = [k * 10 for k in active_kerosene]
+fig.add_trace(graphing.Bar(x=hours, y=oil_scaled, name='Kerosene Burn Rate (Scaled x10)', marker_color='orange', opacity=0.7))
 
 fig.update_layout(xaxis_title="Hour of Day", yaxis_title="Temperature (°C)", template="plotly_dark")
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig)

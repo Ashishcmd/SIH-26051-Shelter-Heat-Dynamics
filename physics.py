@@ -5,21 +5,25 @@ def check_biot(h_cofficient, thickness, k_wall):
     biot_numer = (h_cofficient * thickness) / k_wall
     if biot_numer > 0.1:
         return biot_numer, 1.15
+    
     return biot_numer, 1.0
+
 
 def generate_weather_curves(t_min, t_max, peak_solar):
     t_outside = []
     solar_irradiance = []
+
     
-    t_mean = (t_max + t_min) / 2
+    t_mean = (t_max + t_min) /2
     t_amp = (t_max - t_min) / 2
     
     for hour in range(0,24):
-        temp = t_mean - t_amp * math.cos(math.pi * (hour - 4) / 12)
+        temp = t_mean - t_amp  *math.cos(math.pi * (hour - 4)/ 12)
         t_outside.append(temp)
         
         if 6 <= hour <= 18:
-            sun = peak_solar * math.cos(math.pi * (hour - 12) / 12)
+            sun = peak_solar* math.cos(math.pi * (hour - 12) / 12)
+
             solar_irradiance.append(max(0, sun))
         else:
             solar_irradiance.append(0)
@@ -48,8 +52,9 @@ def calculate_hourly_heat_loss(target_temp, t_outside, solar_irradiance, area, t
             liters = (joules_lost / kpl) * err
         else:
             liters = 0
-            
-        heat_lossWatts.append(max(0, net_loss))
+
+        final_heat_loss = max(0, net_loss)
+        heat_lossWatts.append(final_heat_loss)
         kerosene.append(liters)
         
     return heat_lossWatts, kerosene
