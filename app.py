@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as graphing
+from export import generate_ansys_apdl
 
 from materials import WALL_MATERIALS
 from physics import check_biot, generate_weather_curves, calculate_hourly_heat_loss
@@ -114,6 +115,27 @@ with col_a:
     st.metric(label="Net Heat Lost (24h)", value=f"{round(sum(active_watts)/1000, 1)} kW")
 with col_b:
     st.metric(label="Kerosene Required (24h)", value=f"{round(sum(active_kerosene), 1)} Liters")
+
+
+st.divider()
+st.subheader("Exporting ADPL")
+
+# Generate the script text using your original variable names
+ansys_script_text = generate_ansys_apdl(l,b,h,thickness,active_material,k_active)
+
+st.markdown("Export current geometry and material parameters directly to ANSYS Mechanical for 3D FEA meshing.")
+
+# The Streamlit Download Button
+st.download_button(
+    label="⬇️ Download ANSYS APDL Script (.mac)",
+    data=ansys_script_text,
+    file_name=f"suraksha_shelter_{active_material}.mac",  # Updated variable here too
+    mime="text/plain"
+)
+
+
+
+
 
 fig = graphing.Figure()
 fig.add_trace(graphing.Scatter(x=hours, y=T_outside, mode='lines+markers', name='Outside Temp (°C)', line=dict(color='cyan')))
